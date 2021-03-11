@@ -1,0 +1,18 @@
+{
+	"configurations": {
+		"Launch": {
+			"adapter": "CodeLLDB",
+			"configuration": {
+				"request": "launch",
+				"program": "${workspaceRoot}/target/debug/pecho",
+				"args": ["\\x61"]
+			},
+			"breakpoints": {
+				"exception": {
+					"caught": "N",
+					"uncaught": "Y"
+				}
+			}
+		}
+	}
+}
