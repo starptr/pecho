@@ -4,8 +4,8 @@ use clap::{App, Arg, SubCommand};
 use colored::*;
 use lazy_static::*;
 use regex::Regex;
-use std::env;
 use std::char;
+use std::env;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -66,8 +66,6 @@ fn main() {
         }
     };
 
-    println!("({})", input);
-
     // Replace escaped special characters and add trailing newline if necessary
     let std_print_string = if true {
         replace_std_escapes(input, arg_matches.is_present("newline"))
@@ -75,11 +73,11 @@ fn main() {
         input
     };
 
-    print!("escapes handled: {}", std_print_string);
-
     if let Some(hex) = arg_matches.value_of("truecolor") {
         println!("{}", is_valid_hex(&hex));
     }
+
+    print!("{}", std_print_string);
 }
 
 // Replace escaped characters and conditionally add trailing newline
@@ -94,10 +92,10 @@ fn replace_std_escapes(input: String, mut no_trailing_newline: bool) -> String {
                 // Handle character code formats
                 let radix = if pt2 == '0' { 8 } else { 16 };
                 let (mini, maxi) = match pt2 {
-                    '0' => (2,3),
-                    'x' => (1,3),
-                    'u' => (4,4),
-                    'U' => (8,8),
+                    '0' => (2, 3),
+                    'x' => (1, 3),
+                    'u' => (4, 4),
+                    'U' => (8, 8),
                     _ => panic!(),
                 };
                 // Buffer in the next <=maxi digits
