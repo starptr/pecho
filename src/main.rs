@@ -1,20 +1,16 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
+mod utils;
+use utils::*;
 use clap::{App, Arg, SubCommand};
 use colored::*;
-use lazy_static::*;
-use regex::Regex;
-use std::char;
 use std::env;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    println!("{:?}", args);
-
     let arg_matches = App::new("pecho")
         .version("0.0.1")
         .author("Yuto Nishida")
-        .about("Painted echo, or echo with easy colors.")
+        .about("Painted echo: Echo with easy colors.")
         .arg(
             Arg::with_name("input")
                 .help("The string to print")
@@ -22,10 +18,57 @@ fn main() {
                 .index(1),
         )
         .arg(
-            Arg::with_name("newline")
+            Arg::with_name("noNewline")
                 .short("n")
                 .help("No newline at the end"),
         )
+        .arg(
+            Arg::with_name("noEscapes")
+                .short("E")
+                .help("Treat backslashes literally"),
+        )
+        .arg(Arg::with_name("black").short("k").long("black"))
+        .arg(Arg::with_name("red").short("r").long("red"))
+        .arg(Arg::with_name("green").short("g").long("green"))
+        .arg(Arg::with_name("yellow").short("y").long("yellow"))
+        .arg(Arg::with_name("blue").short("b").long("blue"))
+        .arg(Arg::with_name("purple").short("p").long("purple"))
+        .arg(Arg::with_name("cyan").short("q").long("cyan"))
+        .arg(Arg::with_name("white").short("w").long("white"))
+        .arg(Arg::with_name("blackBg").short("K").long("black-bg"))
+        .arg(Arg::with_name("redBg").short("R").long("red-bg"))
+        .arg(Arg::with_name("greenBg").short("G").long("green-bg"))
+        .arg(Arg::with_name("yellowBg").short("Y").long("yellow-bg"))
+        .arg(Arg::with_name("blueBg").short("B").long("blue-bg"))
+        .arg(Arg::with_name("purpleBg").short("P").long("purple-bg"))
+        .arg(Arg::with_name("cyanBg").short("Q").long("cyan-bg"))
+        .arg(Arg::with_name("whiteBg").short("W").long("white-bg"))
+        .arg(
+            Arg::with_name("bright")
+                .help("Use the bright variant")
+                .short("l")
+                .long("bright"),
+        )
+        .arg(
+            Arg::with_name("brightBg")
+                .help("Use the bright background variant")
+                .short("L")
+                .long("bright-bg"),
+        )
+        .arg(
+                Arg::with_name("color")
+                    .help("Specify color using an argument. Overrides single color options")
+                    .short("c")
+                    .long("color")
+                    .takes_value(true)
+            )
+        .arg(
+                Arg::with_name("colorBg")
+                    .help("Specify background color using an argument. Overrides single color options")
+                    .short("C")
+                    .long("color-bg")
+                    .takes_value(true)
+            )
         .arg(
             Arg::with_name("style")
                 .help("Styling")
@@ -37,7 +80,7 @@ fn main() {
         )
         .arg(
             Arg::with_name("truecolor")
-                .help("Hex color in xxxxxx format")
+                .help("Hex color in xxxxxx format. Overrides other color options")
                 .short("t")
                 .long("truecolor")
                 .takes_value(true)
@@ -45,7 +88,7 @@ fn main() {
         )
         .arg(
             Arg::with_name("truecolorBg")
-                .help("Background in hex in xxxxxx format")
+                .help("Background in hex in xxxxxx format. Overrides other color options")
                 .short("T")
                 .long("truecolor-bg")
                 .takes_value(true)
@@ -54,115 +97,16 @@ fn main() {
         .get_matches();
 
     // Concatenate input into space-separated words
-    let input = match arg_matches.values_of("input") {
-        None => String::from(""),
-        Some(mut values) => {
-            let mut input = String::from(values.next().unwrap());
-            for value in values {
-                input.push(' ');
-                input.push_str(value);
-            }
-            input
-        }
-    };
+    let input = args_to_input(arg_matches.values_of("input"));
 
     // Replace escaped special characters and add trailing newline if necessary
-    let std_print_string = if true {
-        replace_std_escapes(input, arg_matches.is_present("newline"))
-    } else {
-        input
-    };
+    let std_print_string = special_chars_and_newlines(input, arg_matches.is_present("noEscapes"), arg_matches.is_present("noNewline"));
 
-    if let Some(hex) = arg_matches.value_of("truecolor") {
-        println!("{}", is_valid_hex(&hex));
-    }
+    let std_print_string = add_color(std_print_string, &arg_matches, false);
+
+    let std_print_string = add_color(std_print_string.to_string(), &arg_matches, true);
+
+    let std_print_string = add_style(std_print_string, &arg_matches);
 
     print!("{}", std_print_string);
-}
-
-// Replace escaped characters and conditionally add trailing newline
-fn replace_std_escapes(input: String, mut no_trailing_newline: bool) -> String {
-    let mut formatted: Vec<char> = Vec::new();
-    let mut it = input.chars().peekable();
-    while let Some(pt) = it.next() {
-        // Handle escaped chars
-        if pt == '\\' && it.peek() != None {
-            let pt2 = it.next().unwrap();
-            if pt2 == '0' || pt2 == 'x' || pt2 == 'u' || pt2 == 'U' {
-                // Handle character code formats
-                let radix = if pt2 == '0' { 8 } else { 16 };
-                let (mini, maxi) = match pt2 {
-                    '0' => (2, 3),
-                    'x' => (1, 3),
-                    'u' => (4, 4),
-                    'U' => (8, 8),
-                    _ => panic!(),
-                };
-                // Buffer in the next <=maxi digits
-                let mut numerals: Vec<char> = Vec::new();
-                while numerals.len() < maxi {
-                    let c = it.peek();
-                    if c == None {
-                        // There is no next char
-                        break;
-                    } else {
-                        let c = c.unwrap();
-                        // Check c is a valid digit
-                        let d = c.to_digit(radix);
-                        if d == None {
-                            // c isn't a valid digit
-                            break;
-                        } else {
-                            numerals.push(*c);
-                            it.next();
-                        }
-                    }
-                }
-                // Append character to formatted if the length is correct. Otherwise, append
-                // numerals directly
-                if numerals.len() >= mini {
-                    let numerals: String = numerals.into_iter().collect();
-                    let code_point = u32::from_str_radix(&numerals, radix).unwrap();
-                    formatted.push(char::from_u32(code_point).unwrap());
-                } else {
-                    formatted.append(&mut numerals);
-                }
-            } else {
-                formatted.push(match pt2 {
-                    'a' => '\x07',
-                    'b' => '\x08',
-                    'c' => {
-                        no_trailing_newline = true;
-                        break;
-                    }
-                    'e' => '\x1b',
-                    'f' => '\x0c',
-                    'n' => '\n',
-                    'r' => '\r',
-                    't' => '\t',
-                    'v' => '\x0b',
-                    '\\' => '\\',
-                    other => other,
-                });
-            }
-        } else {
-            formatted.push(pt);
-        }
-    }
-    if !no_trailing_newline {
-        formatted.push('\n');
-    }
-    formatted.into_iter().collect()
-}
-
-fn append_string_to_vec(vec: &mut Vec<char>, s: String) {
-    let mut vec_2: Vec<char> = s.chars().collect();
-    vec.append(&mut vec_2);
-}
-
-fn is_valid_hex(s: &str) -> bool {
-    lazy_static! {
-        static ref RE: Regex = Regex::new(r"^[\da-f]{6}$").unwrap();
-    }
-    RE.is_match(s)
 }

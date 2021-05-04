@@ -1,8 +1,11 @@
 [package]
 name = "pecho"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Yuto Nishida <starptr@users.noreply.github.com>"]
 edition = "2018"
+license = "MIT"
+description = "Painted echo: Echo with easy colors"
+repository = "https://github.com/starptr/pecho"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

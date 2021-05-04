@@ -1,0 +1,17 @@
+k black
+r red
+g green
+y yellow
+b blue
+p magenta (or purple)
+q cyan
+w white
+l bright (light)
+m bold (emphasis)
+u underline
+i italic
+d dimmed
+z reversed
+f blink
+h hidden
+x strikethrough
