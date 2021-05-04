@@ -8,7 +8,7 @@ environment:
     RUST_VERSION: stable
 
     # TODO Update this to match the name of your project.
-    CRATE_NAME: trust
+    CRATE_NAME: pecho
 
   # TODO These are all the build jobs. Adjust as necessary. Comment out what you
   # don't need
@@ -22,10 +22,10 @@ environment:
     - TARGET: x86_64-pc-windows-msvc
 
     # Testing other channels
-    - TARGET: x86_64-pc-windows-gnu
-      RUST_VERSION: nightly
-    - TARGET: x86_64-pc-windows-msvc
-      RUST_VERSION: nightly
+    #- TARGET: x86_64-pc-windows-gnu
+    #  RUST_VERSION: nightly
+    #- TARGET: x86_64-pc-windows-msvc
+    #  RUST_VERSION: nightly
 
 install:
   - ps: >-
