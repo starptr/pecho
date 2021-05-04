@@ -1,10 +1,6 @@
-#![allow(dead_code)]
-#![allow(unused_imports)]
 mod utils;
 use utils::*;
-use clap::{App, Arg, SubCommand};
-use colored::*;
-use std::env;
+use clap::{App, Arg};
 
 fn main() {
     let arg_matches = App::new("pecho")

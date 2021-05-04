@@ -119,11 +119,6 @@ fn replace_std_escapes(input: String, mut no_trailing_newline: bool) -> String {
     formatted.into_iter().collect()
 }
 
-fn append_string_to_vec(vec: &mut Vec<char>, s: String) {
-    let mut vec_2: Vec<char> = s.chars().collect();
-    vec.append(&mut vec_2);
-}
-
 fn is_valid_hex(s: &str) -> bool {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^[\da-fA-F]{6}$").unwrap();
