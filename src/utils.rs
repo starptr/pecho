@@ -8,17 +8,6 @@ const COLORS: [&str; 8] = [
     "black", "red", "green", "yellow", "blue", "purple", "cyan", "white",
 ];
 
-const STYLES: [&str; 8] = [
-    "bold",
-    "dimmed",
-    "italic",
-    "underline",
-    "blink",
-    "reversed",
-    "hidden",
-    "strikethrough",
-];
-
 // turn iterable of input into a string of space-separated words
 pub fn args_to_input(values: Option<Values>) -> String {
     match values {
