@@ -13,6 +13,18 @@ jobs:
         shell: bash
     container: "ubuntu:20.04"
     steps:
+    - name: "set APT to non-interactive"
+      shell: bash
+      run: "echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections"
+    - name: "Update APT"
+      shell: bash
+      run: "apt-get update"
+    - name: "Install git"
+      shell: bash
+      run: "apt-get install -y git"
+    - name: "Install curl"
+      shell: bash
+      run: "apt-get install -y curl"
       #- name: "Update APT"
       #  shell: bash
       #  run: "apt-get update"
