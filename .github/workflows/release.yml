@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+*"]
+
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+    defaults:
+      run:
+        shell: bash
+    container: "ubuntu:20.04"
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get install cmake pkg-config libfreetype6-dev libfontconfig1-dev \
+          libxcb-xfixes0-dev python3
+    - name: "checkout repo"
+      uses: actions/checkout@v2
+    - name: "build binary"
+      run: cargo build --release
+    - name: "Upload"
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./target/release/pecho
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
