@@ -13,7 +13,10 @@ jobs:
         shell: bash
     container: "ubuntu:20.04"
     steps:
-    - name: Install dependencies
+    - name: "Update APT"
+      shell: bash
+      run: "apt-get update"
+    - name: "Install dependencies"
       run: |
         apt-get install cmake pkg-config libfreetype6-dev libfontconfig1-dev \
           libxcb-xfixes0-dev python3
