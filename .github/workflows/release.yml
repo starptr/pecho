@@ -13,13 +13,13 @@ jobs:
         shell: bash
     container: "ubuntu:20.04"
     steps:
-    - name: "Update APT"
-      shell: bash
-      run: "apt-get update"
-    - name: "Install dependencies"
-      run: |
-        apt-get install -y cmake pkg-config libfreetype6-dev libfontconfig1-dev \
-          libxcb-xfixes0-dev python3
+      #- name: "Update APT"
+      #  shell: bash
+      #  run: "apt-get update"
+      #- name: "Install dependencies"
+      #  run: |
+      #    apt-get install -y cmake pkg-config libfreetype6-dev libfontconfig1-dev \
+      #      libxcb-xfixes0-dev python3
     - name: "checkout repo"
       uses: actions/checkout@v2
     - name: "build binary"
