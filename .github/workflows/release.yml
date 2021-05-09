@@ -18,7 +18,7 @@ jobs:
       run: "apt-get update"
     - name: "Install dependencies"
       run: |
-        apt-get install cmake pkg-config libfreetype6-dev libfontconfig1-dev \
+        apt-get install -y cmake pkg-config libfreetype6-dev libfontconfig1-dev \
           libxcb-xfixes0-dev python3
     - name: "checkout repo"
       uses: actions/checkout@v2
