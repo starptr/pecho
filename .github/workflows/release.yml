@@ -13,6 +13,9 @@ jobs:
         shell: bash
     container: "ubuntu:20.04"
     steps:
+    - name: "Get current date and time"
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H-%M-%S')"
+      id: date
     - name: "set APT to non-interactive"
       shell: bash
       run: "echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections"
@@ -51,5 +54,6 @@ jobs:
       with:
         files: |
           ./target/release/pecho
+        tag_name: nightly-${{ steps.date.outputs.date }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
