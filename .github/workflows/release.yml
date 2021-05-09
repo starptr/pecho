@@ -22,6 +22,13 @@ jobs:
       #      libxcb-xfixes0-dev python3
     - name: "checkout repo"
       uses: actions/checkout@v2
+    - name: "Install stable toolchain"
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+        components: rustfmt, clippy
     - name: "build binary"
       run: cargo build --release
     - name: "Upload"
