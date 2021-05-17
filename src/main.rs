@@ -1,6 +1,6 @@
 mod utils;
 use utils::*;
-use clap::{App, Arg};
+use clap::{App, Arg, ArgGroup};
 
 fn main() {
     let arg_matches = App::new("pecho")
@@ -53,14 +53,15 @@ fn main() {
         )
         .arg(
                 Arg::with_name("color")
-                    .help("Specify color using an argument. Overrides single color options")
+                    .help("Specify color using an argument")
                     .short("c")
                     .long("color")
                     .takes_value(true)
+                    .possible_values(&COLORS)
             )
         .arg(
                 Arg::with_name("colorBg")
-                    .help("Specify background color using an argument. Overrides single color options")
+                    .help("Specify background color using an argument")
                     .short("C")
                     .long("color-bg")
                     .takes_value(true)
@@ -76,7 +77,7 @@ fn main() {
         )
         .arg(
             Arg::with_name("truecolor")
-                .help("Hex color in xxxxxx format. Overrides other color options")
+                .help("Hex color in xxxxxx format")
                 .short("t")
                 .long("truecolor")
                 .takes_value(true)
@@ -84,12 +85,21 @@ fn main() {
         )
         .arg(
             Arg::with_name("truecolorBg")
-                .help("Background in hex in xxxxxx format. Overrides other color options")
+                .help("Background in hex in xxxxxx format")
                 .short("T")
                 .long("truecolor-bg")
                 .takes_value(true)
                 .value_name("hex"),
         )
+        .group(ArgGroup::with_name("specific")
+            .args(&["black", "red", "green", "yellow", "blue", "purple", "cyan", "white",
+                "blackBg", "redBg", "greenBg", "yellowBg", "blueBg", "purpleBg", "cyanBg", "whiteBg",]))
+        .group(ArgGroup::with_name("generic")
+            .args(&["color", "colorBg"])
+            .conflicts_with("specific"))
+        .group(ArgGroup::with_name("trueGeneric")
+            .args(&["truecolor", "truecolorBg"])
+            .conflicts_with_all(&["specific", "generic"]))
         .get_matches();
 
     // Concatenate input into space-separated words
@@ -98,9 +108,9 @@ fn main() {
     // Replace escaped special characters and add trailing newline if necessary
     let std_print_string = special_chars_and_newlines(input, arg_matches.is_present("noEscapes"), arg_matches.is_present("noNewline"));
 
-    let std_print_string = add_color(std_print_string, &arg_matches, false);
+    let std_print_string = add_color_fg(std_print_string, &arg_matches);
 
-    let std_print_string = add_color(std_print_string.to_string(), &arg_matches, true);
+    let std_print_string = add_color_bg(std_print_string.to_string(), &arg_matches);
 
     let std_print_string = add_style(std_print_string, &arg_matches);
 

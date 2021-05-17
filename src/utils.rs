@@ -4,9 +4,29 @@ use lazy_static::*;
 use regex::Regex;
 use std::char;
 
-const COLORS: [&str; 8] = [
+enum PechoErr {
+    NoMatch,
+    InvalidHex,
+}
+
+pub const COLORS: [&str; 8] = [
     "black", "red", "green", "yellow", "blue", "purple", "cyan", "white",
 ];
+
+// convert a color string to a Color enum
+fn parse_color(s: &str) -> Result<Color, PechoErr>{
+    match s {
+        "black" => Ok(Color::Black),
+        "red" => Ok(Color::Red),
+        "green" => Ok(Color::Green),
+        "yellow" => Ok(Color::Yellow),
+        "blue" => Ok(Color::Blue),
+        "purple" => Ok(Color::Magenta),
+        "cyan" => Ok(Color::Cyan),
+        "white" => Ok(Color::White),
+        _ => Err(PechoErr::NoMatch),
+    }
+}
 
 // turn iterable of input into a string of space-separated words
 pub fn args_to_input(values: Option<Values>) -> String {
@@ -115,18 +135,26 @@ fn is_valid_hex(s: &str) -> bool {
     RE.is_match(s)
 }
 
-pub fn hex_to_dectuple(hex: &str) -> Result<(u8, u8, u8), &str> {
+fn hex_to_dectuple(hex: &str) -> Result<(u8, u8, u8), PechoErr> {
     if is_valid_hex(&hex) {
         let first = u8::from_str_radix(&hex[0..2], 16).unwrap();
         let second = u8::from_str_radix(&hex[2..4], 16).unwrap();
         let third = u8::from_str_radix(&hex[4..6], 16).unwrap();
         Ok((first, second, third))
     } else {
-        Err("Not a valid hex")
+        Err(PechoErr::InvalidHex)
     }
 }
 
-pub fn add_color(input: String, arg_matches: &ArgMatches, is_bg: bool) -> ColoredString {
+pub fn add_color_fg(input: String, arg_matches: &ArgMatches) -> ColoredString {
+    add_color(input, arg_matches, false)
+}
+
+pub fn add_color_bg(input: String, arg_matches: &ArgMatches) -> ColoredString {
+    add_color(input, arg_matches, true)
+}
+
+fn add_color(input: String, arg_matches: &ArgMatches, is_bg: bool) -> ColoredString {
     let suffix = if is_bg { "Bg" } else { "" };
     if let Some(hex) = arg_matches.value_of("truecolor".to_owned() + suffix) {
         if let Ok(truecolor_args) = hex_to_dectuple(&hex) {
