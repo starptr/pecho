@@ -2,6 +2,9 @@
 
 Short for Painted Echo, an alternative utility to `echo` with easy flags for coloring output.
 
+## Install
+Grab a prebuilt Ubuntu 20.04 binary from releases, or run `cargo install pecho`.
+
 ## Usage
 
 ```
