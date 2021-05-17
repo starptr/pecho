@@ -5,6 +5,8 @@ Short for Painted Echo, an alternative utility to `echo` with easy flags for col
 ## Usage
 
 ```
+    pecho [FLAGS] [OPTIONS] [--] [input]...
+
 FLAGS:
     -k, --black
     -K, --black-bg
@@ -30,9 +32,13 @@ FLAGS:
     -Y, --yellow-bg
 
 OPTIONS:
-    -c, --color <color>         Specify color using an argument. Overrides single color options
-    -C, --color-bg <colorBg>    Specify background color using an argument. Overrides single color options
+    -c, --color <color>         Specify color using an argument [possible values: black, red, green, yellow, blue,
+                                purple, cyan, white]
+    -C, --color-bg <colorBg>    Specify background color using an argument
     -s, --style <style>...      Styling
-    -t, --truecolor <hex>       Hex color in xxxxxx format. Overrides other color options
-    -T, --truecolor-bg <hex>    Background in hex in xxxxxx format. Overrides other color options
+    -t, --truecolor <hex>       Hex color in xxxxxx format
+    -T, --truecolor-bg <hex>    Background in hex in xxxxxx format
+
+ARGS:
+    <input>...    The string to print
 ```
