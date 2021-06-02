@@ -280,7 +280,7 @@ fn add_color(input: ColoredString, arg_matches: &ArgMatches, is_bg: bool) -> Col
                 input.truecolor(truecolor_args.0, truecolor_args.1, truecolor_args.2)
             }
         } else {
-            input.normal()
+            input
         }
     } else {
         let prefix = if arg_matches.is_present("bright".to_owned() + suffix) {
@@ -304,7 +304,7 @@ fn add_color(input: ColoredString, arg_matches: &ArgMatches, is_bg: bool) -> Col
                     }
                 }
             }
-            input.normal()
+            input
         }
     }
 }
@@ -328,7 +328,7 @@ pub fn add_style(input: ColoredString, arg_matches: &ArgMatches) -> ColoredStrin
         } else if style == "strikethrough" {
             input.strikethrough()
         } else {
-            input.normal()
+            input
         }
     } else {
         if arg_matches.is_present("bold") {
@@ -348,7 +348,7 @@ pub fn add_style(input: ColoredString, arg_matches: &ArgMatches) -> ColoredStrin
         } else if arg_matches.is_present("strikethrough") {
             input.strikethrough()
         } else {
-            input.normal()
+            input
         }
     }
 }
@@ -409,6 +409,12 @@ mod tests {
     fn test_add_color() {
         let app = get_app();
         assert_eq!("foo".red(), add_color("foo".normal(), &app.clone().get_matches_from(vec!["pecho", "-r"]), false));
-        assert_eq!("foo".on_red(), add_color("foo".normal(), &app.clone().get_matches_from(vec!["pecho", "-R"]), false));
+        assert_eq!("foo".on_red(), add_color("foo".normal(), &app.clone().get_matches_from(vec!["pecho", "-R"]), true));
+    }
+
+    #[test]
+    fn integration() {
+        let app = get_app();
+        assert_eq!("foo\n".red(), parse(app.clone().get_matches_from(vec!["pecho", "-r", "foo"])));
     }
 }
